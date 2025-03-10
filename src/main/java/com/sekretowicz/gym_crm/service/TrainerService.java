@@ -1,67 +1,74 @@
 package com.sekretowicz.gym_crm.service;
 
-import com.sekretowicz.gym_crm.dao.TrainerDao;
-import com.sekretowicz.gym_crm.dao.UserDao;
-import com.sekretowicz.gym_crm.model.Trainer;
-import com.sekretowicz.gym_crm.model.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.sekretowicz.gym_crm.model.*;
+import com.sekretowicz.gym_crm.repo.*;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
+@Slf4j
 @Service
 public class TrainerService {
-    private static final Logger logger = LoggerFactory.getLogger(TrainerService.class);
-
     @Autowired
-    private TrainerDao trainerDao;
+    private TrainerRepo repo;
     @Autowired
-    private UserDao userDao;
+    private UserService userService;
+    @Autowired
+    private EntityManager entityManager;
 
     public void create(Trainer trainer) {
-        trainerDao.save(trainer);
-        logger.info("Created new trainer: {}", trainer);
+        log.info("Creating trainer: {}", trainer);
+        repo.save(trainer);
     }
 
-    public void update(long id, Trainer trainer) {
-        if (trainerDao.getById(id) != null) {
-            trainerDao.update(id, trainer);
-            logger.info("Updated trainer with ID {}: {}", id, trainer);
+    public Trainer getByUsername(String username) {
+        log.info("Fetching trainer by username: {}", username);
+        User user = userService.getByUsername(username);
+        return repo.findByUser(user);
+    }
+
+    public void update(Trainer trainer) {
+        log.info("Updating trainer: {}", trainer);
+        if (repo.existsById(trainer.getId())) {
+            repo.save(trainer);
         } else {
-            logger.warn("Failed to update: trainer with ID {} not found", id);
+            throw new RuntimeException("Trainer not found");
         }
     }
 
-    public Trainer getById(long id) {
-        Trainer trainer = trainerDao.getById(id);
-        if (trainer != null) {
-            logger.info("Fetched trainer with ID {}: {}", id, trainer);
-        } else {
-            logger.warn("Trainer with ID {} not found", id);
-        }
-        return trainer;
+    public void changePassword(long id, String password) {
+        log.info("Changing password for trainer ID: {}", id);
+        Trainer trainer = repo.findById(id).orElseThrow(() -> new RuntimeException("Trainer not found"));
+        userService.changePassword(trainer.getUser().getId(), password);
     }
 
-    public List<Trainer> getAll() {
-        List<Trainer> trainers = trainerDao.getAll();
-        logger.info("Fetched all trainers. Total count: {}", trainers.size());
-        return trainers;
+    public void setActive(long id, boolean isActive) {
+        log.info("Setting active status to {} for trainer ID: {}", isActive, id);
+        Trainer trainer = repo.findById(id).orElseThrow(() -> new RuntimeException("Trainer not found"));
+        userService.setActive(trainer.getUser().getId(), isActive);
     }
 
-    public String getTrainerFullName(Long trainerId) {
-        Trainer trainer = trainerDao.getById(trainerId);
-        if (trainer == null) {
-            throw new NoSuchElementException("Trainer with ID " + trainerId + " not found.");
+    public List<Training> getTrainerTrainings(String trainerUsername, LocalDate fromDate, LocalDate toDate, String traineeName) {
+        log.info("Fetching trainings for trainer: {} with filters", trainerUsername);
+        Trainer trainer = getByUsername(trainerUsername);
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Training> query = cb.createQuery(Training.class);
+        Root<Training> trainingRoot = query.from(Training.class);
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.equal(trainingRoot.get("trainer"), trainer));
+        if (fromDate != null) predicates.add(cb.greaterThanOrEqualTo(trainingRoot.get("trainingDate"), fromDate));
+        if (toDate != null) predicates.add(cb.lessThanOrEqualTo(trainingRoot.get("trainingDate"), toDate));
+        if (traineeName != null && !traineeName.isEmpty()) {
+            Join<Training, Trainee> traineeJoin = trainingRoot.join("trainee");
+            predicates.add(cb.equal(traineeJoin.get("user").get("username"), traineeName));
         }
-
-        User user = userDao.getById(trainer.getUserId());
-        if (user == null) {
-            throw new NoSuchElementException("User with ID " + trainer.getUserId() + " not found.");
-        }
-
-        return user.getFirstName() + " " + user.getLastName();
+        query.select(trainingRoot).where(predicates.toArray(new Predicate[0]));
+        return entityManager.createQuery(query).getResultList();
     }
 }

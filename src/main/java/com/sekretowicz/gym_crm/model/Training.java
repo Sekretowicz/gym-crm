@@ -1,18 +1,28 @@
 package com.sekretowicz.gym_crm.model;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import jakarta.persistence.*;
+import lombok.*;
+import java.util.Date;
 
+@Entity
 @Data
-@AllArgsConstructor
 public class Training {
-    private long id;
-    private long traineeId;
-    private long trainerId;
-    private String name;
-    private long trainingTypeId;
-    private LocalDate date;
-    private int duration;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String trainingName;
+    private Date trainingDate;
+    private int trainingDuration;
+
+    @ManyToOne
+    @JoinColumn(name = "trainee_id", nullable = false)
+    private Trainee trainee;
+
+    @ManyToOne
+    @JoinColumn(name = "trainer_id", nullable = false)
+    private Trainer trainer;
+
+    @ManyToOne
+    @JoinColumn(name = "training_type_id", nullable = false)
+    private TrainingType trainingType;
 }

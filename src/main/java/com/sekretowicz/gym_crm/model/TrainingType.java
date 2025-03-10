@@ -1,12 +1,13 @@
 package com.sekretowicz.gym_crm.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
+@Entity
 @Data
-@AllArgsConstructor
 public class TrainingType {
-    private long id;
-    private String name;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String trainingTypeName;
 }

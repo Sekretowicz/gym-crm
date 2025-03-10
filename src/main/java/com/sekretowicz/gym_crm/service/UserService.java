@@ -1,44 +1,52 @@
 package com.sekretowicz.gym_crm.service;
 
-import com.sekretowicz.gym_crm.dao.UserDao;
 import com.sekretowicz.gym_crm.model.User;
+import com.sekretowicz.gym_crm.repo.UserRepo;
+import com.sekretowicz.gym_crm.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 
-import java.security.SecureRandom;
-
+@Slf4j
 @Service
 public class UserService {
-    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    private static final SecureRandom RANDOM = new SecureRandom();
-
     @Autowired
-    private UserDao userDao;
+    private UserRepo repo;
 
     public void create(User user) {
-        generatePassword(user);
-        generateUsername(user);
+        log.info("Generating username and password for: {} {}", user.getFirstName(), user.getLastName());
+        user.setUsername(UserUtils.generateUsername(user.getFirstName(), user.getLastName()));
+        user.setPassword(UserUtils.generatePassword(8));
 
+        repo.save(user);
+        log.info("User created with username: {}", user.getUsername());
     }
 
-    private void generateUsername(User user) {
-        String baseUsername = user.getFirstName() + "." + user.getLastName();
-        String username = baseUsername;
-        int counter = 1;
-
-        while (userDao.getByUsername(username) != null) {
-            username = baseUsername + counter;
-            counter++;
-        }
-
-        user    .setUsername(username);
+    public User getByUsername(String username) {
+        log.info("Fetching user by username: {}", username);
+        return repo.findByUsername(username);
     }
 
-    private void generatePassword(User user) {
-        StringBuilder password = new StringBuilder(10);
-        for (int i = 0; i < 10; i++) {
-            password.append(CHARACTERS.charAt(RANDOM.nextInt(CHARACTERS.length())));
+    public void update(User user) {
+        log.info("Updating user: {}", user);
+        if (repo.existsById(user.getId())) {
+            repo.save(user);
+        } else {
+            throw new RuntimeException("User not found");
         }
-        user.setPassword(password.toString());
+    }
+
+    public void changePassword(long id, String password) {
+        log.info("Changing password for user ID: {}", id);
+        User user = repo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        user.setPassword(password);
+        repo.save(user);
+    }
+
+    public void setActive(long id, boolean isActive) {
+        log.info("Setting active status to {} for user ID: {}", isActive, id);
+        User user = repo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        user.setActive(isActive);
+        repo.save(user);
     }
 }

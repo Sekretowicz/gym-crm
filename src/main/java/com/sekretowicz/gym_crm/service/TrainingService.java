@@ -1,39 +1,72 @@
 package com.sekretowicz.gym_crm.service;
 
-import com.sekretowicz.gym_crm.dao.TrainingDao;
-import com.sekretowicz.gym_crm.model.Training;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.sekretowicz.gym_crm.model.*;
+import com.sekretowicz.gym_crm.repo.*;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class TrainingService {
-    private static final Logger logger = LoggerFactory.getLogger(TrainingService.class);
-
     @Autowired
-    private TrainingDao dao;
+    private TrainingRepo repo;
+    @Autowired
+    private TraineeService traineeService;
+    @Autowired
+    private TrainerService trainerService;
+    @Autowired
+    private EntityManager entityManager;
 
-    public void create(Training training) {
-        dao.save(training);
-        logger.info("Created new training: {}", training);
+    @Transactional
+    public Training addTraining(Training training) {
+        log.info("Adding training: {}", training);
+        return repo.save(training);
     }
 
-    public Training getById(long id) {
-        Training training = dao.getById(id);
-        if (training != null) {
-            logger.info("Fetched training with ID {}: {}", id, training);
-        } else {
-            logger.warn("Training with ID {} not found", id);
+    public List<Training> getTraineeTrainings(String traineeUsername, LocalDate fromDate, LocalDate toDate, String trainerName, String trainingType) {
+        log.info("Fetching trainings for trainee: {}", traineeUsername);
+        Trainee trainee = traineeService.getByUsername(traineeUsername);
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Training> query = cb.createQuery(Training.class);
+        Root<Training> trainingRoot = query.from(Training.class);
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.equal(trainingRoot.get("trainee"), trainee));
+        if (fromDate != null) predicates.add(cb.greaterThanOrEqualTo(trainingRoot.get("trainingDate"), fromDate));
+        if (toDate != null) predicates.add(cb.lessThanOrEqualTo(trainingRoot.get("trainingDate"), toDate));
+        if (trainerName != null && !trainerName.isEmpty()) {
+            Join<Training, Trainer> trainerJoin = trainingRoot.join("trainer");
+            predicates.add(cb.equal(trainerJoin.get("user").get("username"), trainerName));
         }
-        return training;
+        if (trainingType != null && !trainingType.isEmpty()) {
+            predicates.add(cb.equal(trainingRoot.get("trainingType"), trainingType));
+        }
+        query.select(trainingRoot).where(predicates.toArray(new Predicate[0]));
+        return entityManager.createQuery(query).getResultList();
     }
 
-    public List<Training> getAll() {
-        List<Training> trainings = dao.getAll();
-        logger.info("Fetched all trainings. Total count: {}", trainings.size());
-        return trainings;
+    public List<Training> getTrainerTrainings(String trainerUsername, LocalDate fromDate, LocalDate toDate, String traineeName) {
+        log.info("Fetching trainings for trainer: {}", trainerUsername);
+        Trainer trainer = trainerService.getByUsername(trainerUsername);
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Training> query = cb.createQuery(Training.class);
+        Root<Training> trainingRoot = query.from(Training.class);
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.equal(trainingRoot.get("trainer"), trainer));
+        if (fromDate != null) predicates.add(cb.greaterThanOrEqualTo(trainingRoot.get("trainingDate"), fromDate));
+        if (toDate != null) predicates.add(cb.lessThanOrEqualTo(trainingRoot.get("trainingDate"), toDate));
+        if (traineeName != null && !traineeName.isEmpty()) {
+            Join<Training, Trainee> traineeJoin = trainingRoot.join("trainee");
+            predicates.add(cb.equal(traineeJoin.get("user").get("username"), traineeName));
+        }
+        query.select(trainingRoot).where(predicates.toArray(new Predicate[0]));
+        return entityManager.createQuery(query).getResultList();
     }
 }

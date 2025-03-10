@@ -1,13 +1,25 @@
 package com.sekretowicz.gym_crm.model;
 
-import lombok.AllArgsConstructor;
+import jakarta.persistence.*;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
+@Entity
+@Table(name = "trainer")
 @Data
-@AllArgsConstructor
 public class Trainer {
-    private long id;
-    private long userId;
-    private long trainingTypeId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
+
+    @Column(nullable = false)
+    private String specialization;
+
+    @ManyToMany(mappedBy = "trainers")
+    private Set<Trainee> trainees;
 }
