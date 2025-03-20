@@ -2,6 +2,8 @@ package com.sekretowicz.gym_crm.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -11,7 +13,7 @@ public class Training {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String trainingName;
-    private Date trainingDate;
+    private LocalDate trainingDate;
     private int trainingDuration;
 
     @ManyToOne

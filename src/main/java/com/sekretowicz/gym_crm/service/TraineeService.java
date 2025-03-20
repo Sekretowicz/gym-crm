@@ -1,9 +1,13 @@
 package com.sekretowicz.gym_crm.service;
 
+import com.sekretowicz.gym_crm.dto.TraineeDto;
+import com.sekretowicz.gym_crm.dto.TrainerDto;
+import com.sekretowicz.gym_crm.dto.UserCredentials;
 import com.sekretowicz.gym_crm.model.*;
 import com.sekretowicz.gym_crm.repo.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +27,8 @@ public class TraineeService {
     private TrainerRepo trainerRepo;
     @Autowired
     private EntityManager entityManager;
+    @Autowired
+    private TrainerService trainerService;
 
     public void create(Trainee trainee) {
         log.info("Creating trainee: {}", trainee);
@@ -56,6 +62,7 @@ public class TraineeService {
         userService.setActive(trainee.getUser().getId(), isActive);
     }
 
+    @Transactional
     public void deleteByUsername(String username) {
         log.info("Deleting trainee by username: {}", username);
         User user = userService.getByUsername(username);
@@ -99,4 +106,79 @@ public class TraineeService {
         trainee.setTrainers(trainers);
         repo.save(trainee);
     }
+
+    //REST task     17.03.2025
+    @Transactional
+    public UserCredentials register(TraineeDto dto) {
+        //Creating a user
+        User user = new User();
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+        user.setActive(true);
+        userService.create(user);
+
+        //Creating a Trainee
+        Trainee trainee = new Trainee();
+        trainee.setUser(user);
+        trainee.setDateOfBirth(dto.getDateOfBirth());
+        trainee.setAddress(dto.getAddress());
+        create(trainee);
+
+        UserCredentials response = new UserCredentials();
+        response.setUsername(user.getUsername());
+        response.setPassword(user.getPassword());
+        return response;
+    }
+
+    //5. Get Trainee Profile (GET method)
+    public TraineeDto getTraineeProfile(String username) {
+        Trainee trainee = getByUsername(username);
+        //TODO: Add exception handling
+
+        return new TraineeDto(trainee, true);
+    }
+
+    //6. Update Trainee Profile (PUT method)
+    @Transactional
+    public TraineeDto updateTraineeProfile (TraineeDto dto) {
+        //Update user
+        User user = userService.getByUsername(dto.getUsername());
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+        user.setActive(dto.isActive());
+        userService.update(user);
+
+        //Update trainee
+        Trainee trainee = repo.findByUser(user);
+        trainee.setDateOfBirth(dto.getDateOfBirth());
+        trainee.setAddress(dto.getAddress());
+        update(trainee);
+
+        return new TraineeDto(trainee, true);
+    }
+
+    //11. Update Trainee's Trainer List (PUT method)
+    @Transactional
+    public List<TrainerDto> updateTrainerList(TraineeDto dto) {
+        Trainee trainee = getByUsername(dto.getUsername());
+        List<Trainer> newTrainersList = dto.getTrainersList().stream()
+                .map(trainerDto -> trainerService.getByUsername(trainerDto.getUsername()))
+                .toList();
+        trainee.setTrainers(newTrainersList);
+        update(trainee);
+
+        return newTrainersList.stream()
+                .map(trainer -> new TrainerDto(trainer, false))
+                .toList();
+    }
+
+    //15. Activate/De-Activate Trainee (PATCH method)
+    public void setActive(String username, boolean isActive) {
+        //TODO: Если нету Trainee с таким именем, бросаем исключение
+        Trainee trainee = getByUsername(username);
+        User user = trainee.getUser();
+        user.setActive(isActive);
+        userService.update(user);
+    }
+
 }

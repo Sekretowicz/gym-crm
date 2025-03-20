@@ -18,11 +18,14 @@ public class Trainee {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @Column(nullable = false)
+    @Column
     private LocalDate dateOfBirth;
 
     @Column
     private String address;
+
+    @OneToMany(mappedBy = "trainee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Training> trainings;
 
     @ManyToMany
     @JoinTable(

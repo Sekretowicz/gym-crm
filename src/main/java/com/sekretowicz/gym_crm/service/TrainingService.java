@@ -1,5 +1,6 @@
 package com.sekretowicz.gym_crm.service;
 
+import com.sekretowicz.gym_crm.dto.TrainingDto;
 import com.sekretowicz.gym_crm.model.*;
 import com.sekretowicz.gym_crm.repo.*;
 import jakarta.persistence.EntityManager;
@@ -68,5 +69,22 @@ public class TrainingService {
         }
         query.select(trainingRoot).where(predicates.toArray(new Predicate[0]));
         return entityManager.createQuery(query).getResultList();
+    }
+
+    //REST task
+
+    //14. Add Training (POST method)
+    public void addTraining(TrainingDto dto) {
+        Training training = new Training();
+        Trainee trainee = traineeService.getByUsername(dto.getTraineeName());
+        Trainer trainer = trainerService.getByUsername(dto.getTrainerName());
+
+        training.setTrainee(trainee);
+        training.setTrainer(trainer);
+        training.setTrainingName(dto.getTrainingName());
+        training.setTrainingDate(dto.getTrainingDate());
+        training.setTrainingDuration(dto.getTrainingDuration());
+
+        repo.save(training);
     }
 }

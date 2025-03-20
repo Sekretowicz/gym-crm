@@ -1,8 +1,10 @@
 package com.sekretowicz.gym_crm.service;
 
+import com.sekretowicz.gym_crm.dto.ChangePasswordDto;
 import com.sekretowicz.gym_crm.model.User;
 import com.sekretowicz.gym_crm.repo.UserRepo;
 import com.sekretowicz.gym_crm.utils.UserUtils;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +38,7 @@ public class UserService {
         }
     }
 
+    @Transactional
     public void changePassword(long id, String password) {
         log.info("Changing password for user ID: {}", id);
         User user = repo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
@@ -48,5 +51,31 @@ public class UserService {
         User user = repo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         user.setActive(isActive);
         repo.save(user);
+    }
+
+    //REST task     17.03.2025
+
+    public boolean login(String username, String password) {
+        User user = getByUsername(username);
+
+        //TODO: Что если выбрасывать тут исключения, а обрабатывать в контроллере?
+        if (!user.getPassword().equals(password)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    //Создадим перегрузку changePassword
+    @Transactional
+    public boolean changePassword(ChangePasswordDto dto) {
+        User user = getByUsername(dto.getUsername());
+        //TODO: Добавить исключение при неправильном пароле
+        if (!user.getPassword().equals(dto.getOldPassword())) {
+            return false;
+        }
+        user.setPassword(dto.getNewPassword());
+        repo.save(user);
+        return true;
     }
 }
