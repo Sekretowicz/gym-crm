@@ -1,5 +1,8 @@
 package com.sekretowicz.gym_crm.health;
 
+import com.sekretowicz.gym_crm.repo.TraineeRepo;
+import com.sekretowicz.gym_crm.repo.TrainerRepo;
+import com.sekretowicz.gym_crm.repo.TrainingRepo;
 import com.sekretowicz.gym_crm.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
@@ -12,11 +15,11 @@ public class StatsHealthIndicator implements HealthIndicator {
     @Autowired
     private UserRepo userRepo;
     @Autowired
-    private UserRepo traineeRepo;
+    private TraineeRepo traineeRepo;
     @Autowired
-    private UserRepo trainerRepo;
+    private TrainerRepo trainerRepo;
     @Autowired
-    private UserRepo trainingRepo;
+    private TrainingRepo trainingRepo;
 
     @Override
     public Health health() {

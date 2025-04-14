@@ -3,6 +3,7 @@ package com.sekretowicz.gym_crm.dto.trainer;
 
 import com.sekretowicz.gym_crm.dto.trainee.TraineeShortDto;
 import com.sekretowicz.gym_crm.model.Trainer;
+import com.sekretowicz.gym_crm.model.TrainingType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -20,7 +21,7 @@ public class TrainerProfileResponse {
     private String lastName;
 
     @Schema(description = "Specialization")
-    private String specialization;
+    private TrainingType specialization;
 
     @Schema(description = "Is active")
     private boolean isActive;

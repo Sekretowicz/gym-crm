@@ -2,16 +2,12 @@ package com.sekretowicz.gym_crm.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "trainer")
 @Data
-@ToString(exclude = {"trainees"})
 public class Trainer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,9 +17,10 @@ public class Trainer {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @Column(nullable = false)
-    private String specialization;
+    @ManyToOne
+    @JoinColumn(name = "specialization_id", nullable = false)
+    private TrainingType specialization;
 
     @ManyToMany(mappedBy = "trainers")
-    private List<Trainee> trainees = new ArrayList<>();
+    private Set<Trainee> trainees;
 }

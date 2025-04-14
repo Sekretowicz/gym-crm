@@ -37,7 +37,7 @@ public class TrainerController {
     }
 
     //9. Update Trainer Profile (PUT method)
-    @PutMapping("/")
+    @PutMapping("/profile")
     @Operation(summary = "Update trainer profile", description = "Update trainer details (specialization is read-only)")
     public TrainerProfileResponse updateTrainerProfile(@RequestBody TrainerUpdateRequest dto) {
         return service.updateTrainerProfile(dto);
@@ -54,9 +54,9 @@ public class TrainerController {
     }
 
     //16. Activate/De-Activate Trainer (PATCH method)
-    @PatchMapping("/{username}")
+    @PatchMapping("/status")
     @Operation(summary = "Activate or deactivate trainer", description = "Set active status for trainer")
-    public void setActive(SetActiveRequest request) {
+    public void setActive(@RequestBody SetActiveRequest request) {
         service.setActive(request);
     }
 }

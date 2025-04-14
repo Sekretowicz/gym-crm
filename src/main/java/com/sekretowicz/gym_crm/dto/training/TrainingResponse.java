@@ -2,6 +2,7 @@ package com.sekretowicz.gym_crm.dto.training;
 
 
 import com.sekretowicz.gym_crm.model.Training;
+import com.sekretowicz.gym_crm.model.TrainingType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -16,7 +17,7 @@ public class TrainingResponse {
     private LocalDate trainingDate;
 
     @Schema(description = "Training type")
-    private String trainingType;
+    private TrainingType trainingType;
 
     @Schema(description = "Duration in minutes")
     private int trainingDuration;
@@ -27,7 +28,8 @@ public class TrainingResponse {
     public TrainingResponse(Training training) {
         this.trainingName = training.getTrainingName();
         this.trainingDate = training.getTrainingDate();
-        this.trainingType = training.getTrainingType().getTrainingTypeName();
+        this.trainingType = training.getTrainingType();
+        this.trainingDuration = training.getTrainingDuration();
         this.partnerName = training.getTrainer().getUser().getUsername();
     }
 }

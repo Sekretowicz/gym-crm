@@ -49,7 +49,7 @@ public class TrainingService {
             predicates.add(cb.equal(trainerJoin.get("user").get("username"), trainerName));
         }
         if (trainingType != null && !trainingType.isEmpty()) {
-            predicates.add(cb.equal(trainingRoot.get("trainingType").get("trainingTypeName"), trainingType));
+            predicates.add(cb.equal(trainingRoot.get("trainingType"), trainingType));
         }
         query.select(trainingRoot).where(predicates.toArray(new Predicate[0]));
         return entityManager.createQuery(query).getResultList();
@@ -98,6 +98,7 @@ public class TrainingService {
         Training training = new Training();
         Trainee trainee = traineeService.getByUsername(dto.getTraineeUsername());
         Trainer trainer = trainerService.getByUsername(dto.getTrainerUsername());
+        training.setTrainingType(trainer.getSpecialization());
 
         training.setTrainee(trainee);
         training.setTrainer(trainer);

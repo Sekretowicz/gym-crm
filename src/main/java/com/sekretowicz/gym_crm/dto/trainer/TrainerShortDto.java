@@ -2,6 +2,7 @@ package com.sekretowicz.gym_crm.dto.trainer;
 
 
 import com.sekretowicz.gym_crm.model.Trainer;
+import com.sekretowicz.gym_crm.model.TrainingType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -17,7 +18,7 @@ public class TrainerShortDto {
     private String lastName;
 
     @Schema(description = "Specialization")
-    private String specialization;
+    private TrainingType specialization;
 
     public TrainerShortDto(Trainer trainer) {
         this.username = trainer.getUser().getUsername();

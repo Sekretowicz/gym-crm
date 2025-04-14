@@ -28,7 +28,6 @@ public class TraineeController {
     //1. Trainee Registration (POST method)
     @PostMapping("/register")
     @Operation(summary = "Register a new trainee", description = "Register a new trainee and return credentials")
-    @ResponseBody
     public UserCredentials register (@RequestBody TraineeRegistrationRequest request) {
         return service.register(request);
     }
@@ -42,7 +41,7 @@ public class TraineeController {
     }
 
     //6. Update Trainee Profile (PUT method)
-    @PutMapping("/")
+    @PutMapping("/profile")
     @Operation(summary = "Update Trainee Profile", description = "Update the profile of a trainee")
     public TraineeProfileResponse updateTraineeProfile(@RequestBody TraineeUpdateRequest request) {
         return service.updateTraineeProfile(request);
@@ -63,7 +62,7 @@ public class TraineeController {
     }
 
     //11. Update Trainee's Trainer List (PUT method)
-    @PutMapping("/{username}")
+    @PutMapping("/{username}/trainers")
     @Operation(summary = "Update Trainer List", description = "Update the list of trainers assigned to the trainee")
     public List<TrainerShortDto> updateTrainerList(@PathVariable String username,
                                               @RequestBody UpdateTraineeTrainersRequest request) {
@@ -82,7 +81,7 @@ public class TraineeController {
     }
 
     //15. Activate/De-Activate Trainee (PATCH method)
-    @PatchMapping("/{username}")
+    @PatchMapping("/status")
     @Operation(summary = "Set Active Status", description = "Activate or deactivate a trainee")
     public void setActive(@RequestBody SetActiveRequest request) {
         service.setActive(request);

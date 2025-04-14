@@ -11,5 +11,13 @@ public class SetActiveRequest {
     private String username;
 
     @Schema(description = "Active flag", required = true)
-    private boolean isActive;
+    private Boolean isActive;
+
+    public Boolean isActive() {
+        return isActive != null && isActive;
+    }
+
+    public void setActive (Boolean active) {
+        this.isActive = active;
+    }
 }

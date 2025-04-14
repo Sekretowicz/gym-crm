@@ -6,7 +6,6 @@ import com.sekretowicz.gym_crm.dto.trainer.TrainerRegistrationRequest;
 import com.sekretowicz.gym_crm.dto.trainer.TrainerUpdateRequest;
 import com.sekretowicz.gym_crm.dto.training.TrainingResponse;
 import com.sekretowicz.gym_crm.dto_legacy.UserCredentials;
-import com.sekretowicz.gym_crm.metrics.CustomMetrics;
 import com.sekretowicz.gym_crm.model.*;
 import com.sekretowicz.gym_crm.repo.*;
 import jakarta.persistence.EntityManager;
@@ -31,10 +30,8 @@ public class TrainerService {
     private UserService userService;
     @Autowired
     private EntityManager entityManager;
-
-    //Prometheus metrics
     @Autowired
-    private CustomMetrics customMetrics;
+    private TrainingTypeService trainingTypeService;
 
     public void create(Trainer trainer) {
         log.info("Creating trainer: {}", trainer);
@@ -97,7 +94,7 @@ public class TrainerService {
         if (dto.getLastName() == null || dto.getLastName().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Last name is required");
         }
-        if (dto.getSpecialization() == null || dto.getSpecialization().isEmpty()) {
+        if (dto.getSpecId() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Specialization is required");
         }
 
@@ -111,16 +108,12 @@ public class TrainerService {
         //Creating a Trainer
         Trainer trainer = new Trainer();
         trainer.setUser(user);
-        trainer.setSpecialization(dto.getSpecialization());
+        trainer.setSpecialization(trainingTypeService.getById(dto.getSpecId()));
         create(trainer);
 
         UserCredentials response = new UserCredentials();
         response.setUsername(user.getUsername());
         response.setPassword(user.getPassword());
-
-        //Incrementing the registration counter
-        customMetrics.incrementTrainerRegistration();
-
         return response;
     }
 

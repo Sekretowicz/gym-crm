@@ -1,7 +1,6 @@
 package com.sekretowicz.gym_crm.service;
 
 import com.sekretowicz.gym_crm.dto_legacy.ChangePasswordDto;
-import com.sekretowicz.gym_crm.metrics.CustomMetrics;
 import com.sekretowicz.gym_crm.model.User;
 import com.sekretowicz.gym_crm.repo.UserRepo;
 import com.sekretowicz.gym_crm.utils.UserUtils;
@@ -17,10 +16,6 @@ import org.springframework.web.server.ResponseStatusException;
 public class UserService {
     @Autowired
     private UserRepo repo;
-
-    //Prometheus metrics
-    @Autowired
-    private CustomMetrics customMetrics;
 
     public void create(User user) {
         log.info("Generating username and password for: {} {}", user.getFirstName(), user.getLastName());
@@ -66,15 +61,13 @@ public class UserService {
     public boolean login(String username, String password) {
         User user = getByUsername(username);
         if (!user.getPassword().equals(password)) {
-            log.warn("Login failed for user: {}", username);
-            customMetrics.incrementLoginFailure();
             return false;
         }
-        log.info("Login successful for user: {}", username);
-        customMetrics.incrementLoginSuccess();
+
         return true;
     }
 
+    //Создадим перегрузку changePassword
     @Transactional
     public boolean changePassword(ChangePasswordDto dto) throws ResponseStatusException {
         //Validation

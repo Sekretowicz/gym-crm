@@ -18,7 +18,7 @@ public class TrainingController {
     private TrainingService service;
 
     //14. Add Training (POST method)
-    @PostMapping("/")
+    @PostMapping
     @Operation(summary = "Add new training", description = "Create and assign training to trainee and trainer")
     public void addTraining(@RequestBody AddTrainingRequest dto) {
         service.addTraining(dto);

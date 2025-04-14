@@ -26,7 +26,7 @@ public class UserController {
 
     //4. Change Login (PUT method)
     //It's called so in documentation, but actually it changes password
-    @PutMapping()
+    @PutMapping("/password")
     public ResponseEntity<String> changePassword(@RequestBody ChangePasswordDto dto) {
         if(service.changePassword(dto)) {
             return ResponseEntity.ok(null);

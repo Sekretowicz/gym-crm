@@ -27,5 +27,13 @@ public class TraineeUpdateRequest {
     private String address;
 
     @Schema(description = "Is active", required = true)
-    private boolean isActive;
+    private Boolean isActive;
+
+    public Boolean isActive() {
+        return isActive != null && isActive;
+    }
+
+    public void setActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
 }

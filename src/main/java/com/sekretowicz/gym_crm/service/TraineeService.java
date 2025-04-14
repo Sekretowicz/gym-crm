@@ -8,7 +8,6 @@ import com.sekretowicz.gym_crm.dto.trainee.UpdateTraineeTrainersRequest;
 import com.sekretowicz.gym_crm.dto.trainer.TrainerShortDto;
 import com.sekretowicz.gym_crm.dto.training.TrainingResponse;
 import com.sekretowicz.gym_crm.dto_legacy.UserCredentials;
-import com.sekretowicz.gym_crm.metrics.CustomMetrics;
 import com.sekretowicz.gym_crm.model.*;
 import com.sekretowicz.gym_crm.repo.*;
 import jakarta.persistence.criteria.*;
@@ -37,10 +36,6 @@ public class TraineeService {
     private EntityManager entityManager;
     @Autowired
     private TrainerService trainerService;
-
-    //Prometheus metrics
-    @Autowired
-    private CustomMetrics customMetrics;
 
     public void create(Trainee trainee) {
         log.info("Creating trainee: {}", trainee);
@@ -81,9 +76,6 @@ public class TraineeService {
         repo.deleteByUser(user);
     }
 
-    /*
-    //Old version
-
     public List<TrainingResponse> getTraineeTrainings(String traineeUsername, LocalDate fromDate, LocalDate toDate, String trainerName, String trainingType) {
         log.info("Fetching trainings for trainee: {} with filters", traineeUsername);
         Trainee trainee = getByUsername(traineeUsername);
@@ -105,41 +97,8 @@ public class TraineeService {
         List<Training> resultList = entityManager.createQuery(query).getResultList();
         return resultList.stream().map(TrainingResponse::new).toList();
     }
-     */
 
-    public List<TrainingResponse> getTraineeTrainings(String traineeUsername, LocalDate fromDate, LocalDate toDate, String trainerName, String trainingType) {
-        log.info("Fetching trainings for trainee: {} with filters", traineeUsername);
-        Trainee trainee = getByUsername(traineeUsername);
-
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Training> query = cb.createQuery(Training.class);
-        Root<Training> trainingRoot = query.from(Training.class);
-
-        List<Predicate> predicates = new ArrayList<>();
-        predicates.add(cb.equal(trainingRoot.get("trainee"), trainee));
-
-        if (fromDate != null) {
-            predicates.add(cb.greaterThanOrEqualTo(trainingRoot.get("trainingDate"), fromDate));
-        }
-        if (toDate != null) {
-            predicates.add(cb.lessThanOrEqualTo(trainingRoot.get("trainingDate"), toDate));
-        }
-
-        if (trainerName != null && !trainerName.isEmpty()) {
-            Join<Training, Trainer> trainerJoin = trainingRoot.join("trainer");
-            predicates.add(cb.equal(trainerJoin.get("user").get("username"), trainerName));
-        }
-
-        if (trainingType != null && !trainingType.isEmpty()) {
-            Join<Training, TrainingType> typeJoin = trainingRoot.join("trainingType");
-            predicates.add(cb.equal(typeJoin.get("trainingTypeName"), trainingType));
-        }
-
-        query.select(trainingRoot).where(predicates.toArray(new Predicate[0]));
-        List<Training> resultList = entityManager.createQuery(query).getResultList();
-        return resultList.stream().map(TrainingResponse::new).toList();
-    }
-
+    @Transactional
     public List<TrainerShortDto> getUnassignedTrainers(String traineeUsername) {
         log.info("Fetching unassigned trainers for trainee: {}", traineeUsername);
         Trainee trainee = getByUsername(traineeUsername);
@@ -195,10 +154,6 @@ public class TraineeService {
         response.setUsername(user.getUsername());
         response.setPassword(user.getPassword());
         log.info("Trainee registration completed successfully for username: {}", response.getUsername());
-
-        //Incrementing the registration metric
-        customMetrics.incrementTraineeRegistration();
-
         return response;
     }
 

@@ -2,6 +2,7 @@ package com.sekretowicz.gym_crm.dto_legacy;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sekretowicz.gym_crm.model.Trainer;
+import com.sekretowicz.gym_crm.model.TrainingType;
 import com.sekretowicz.gym_crm.model.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,8 +14,8 @@ public class ShortTrainerDto {
     private String username;
     private String firstName;
     private String lastName;
-    private String specialization;
-    private boolean isActive;
+    private TrainingType specialization;
+    private Boolean isActive;
 
     public ShortTrainerDto(Trainer trainer) {
         if (trainer.getUser() != null) {

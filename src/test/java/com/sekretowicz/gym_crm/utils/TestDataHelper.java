@@ -22,16 +22,11 @@ import java.util.List;
 @Component
 public class TestDataHelper {
 
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private TraineeService traineeService;
-    @Autowired
-    private TrainerService trainerService;
-    @Autowired
-    private TrainingService trainingService;
-    @Autowired
-    private TrainingTypeRepo trainingTypeRepo;
+    @Autowired private UserService userService;
+    @Autowired private TraineeService traineeService;
+    @Autowired private TrainerService trainerService;
+    @Autowired private TrainingService trainingService;
+    @Autowired private TrainingTypeRepo trainingTypeRepo;
 
     private final Faker faker = new Faker();
 
@@ -50,7 +45,11 @@ public class TestDataHelper {
         request.setFirstName(faker.name().firstName());
         request.setLastName(faker.name().lastName());
         request.setAddress(faker.address().fullAddress());
-        request.setDateOfBirth(LocalDate.of(faker.number().numberBetween(1980, 2000), faker.number().numberBetween(1, 12), faker.number().numberBetween(1, 28)));
+        request.setDateOfBirth(LocalDate.of(
+                faker.number().numberBetween(1980, 2000),
+                faker.number().numberBetween(1, 12),
+                faker.number().numberBetween(1, 28))
+        );
         return traineeService.register(request);
     }
 
@@ -60,10 +59,11 @@ public class TestDataHelper {
     }
 
     public UserCredentials createRandomTrainer() {
+        TrainingType trainingType = trainingTypeRepo.findByTrainingTypeName("Fitness");
         TrainerRegistrationRequest request = new TrainerRegistrationRequest();
         request.setFirstName(faker.name().firstName());
         request.setLastName(faker.name().lastName());
-        request.setSpecialization("Fitness");
+        request.setSpecId(trainingType.getId());
         return trainerService.register(request);
     }
 
@@ -109,6 +109,7 @@ public class TestDataHelper {
         training.setTrainingType(trainingTypeRepo.findByTrainingTypeName(typeName));
         trainingService.addTraining(training);
     }
+
     public TraineeRegistrationRequest createInvalidTraineeRequest_MissingFirstName() {
         TraineeRegistrationRequest request = new TraineeRegistrationRequest();
         request.setLastName(faker.name().lastName());
@@ -126,9 +127,10 @@ public class TestDataHelper {
     }
 
     public TrainerRegistrationRequest createInvalidTrainerRequest_MissingFirstName() {
+        TrainingType trainingType = trainingTypeRepo.findByTrainingTypeName("Fitness");
         TrainerRegistrationRequest request = new TrainerRegistrationRequest();
         request.setLastName(faker.name().lastName());
-        request.setSpecialization("Fitness");
+        request.setSpecId(trainingType.getId());
         return request;
     }
 
@@ -138,5 +140,4 @@ public class TestDataHelper {
         request.setLastName(faker.name().lastName());
         return request;
     }
-
 }
