@@ -1,10 +1,18 @@
 package com.sekretowicz.gym_crm.controller;
 
+import com.sekretowicz.gym_crm.auth.JwtUtil;
+import com.sekretowicz.gym_crm.auth.LoginAttemptService;
 import com.sekretowicz.gym_crm.dto_legacy.ChangePasswordDto;
+import com.sekretowicz.gym_crm.dto_legacy.UserCredentials;
 import com.sekretowicz.gym_crm.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,14 +21,31 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     @Autowired
     private UserService service;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private LoginAttemptService loginAttemptService;
+    @Autowired
+    private JwtUtil jwtUtil;
 
-    //3. Login (GET method)
     @GetMapping("/login")
-    public ResponseEntity<String> login(@RequestParam String username, @RequestParam String password) {
-        if (service.login(username, password)) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.status(403).build();
+    public ResponseEntity<String> login(@RequestParam String username,
+                                        @RequestParam String password) {
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, password)
+            );
+
+            loginAttemptService.reset(username);
+
+            String token = jwtUtil.generateToken(username);
+            return ResponseEntity.ok(token);
+
+        } catch (BadCredentialsException ex) {
+            loginAttemptService.registerFailure(username);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid credentials");
+        } catch (LockedException ex) {
+            return ResponseEntity.status(HttpStatus.LOCKED).body("Account is temporarily locked");
         }
     }
 

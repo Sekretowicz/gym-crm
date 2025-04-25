@@ -1,29 +1,50 @@
 package com.sekretowicz.gym_crm.service;
 
+import com.sekretowicz.gym_crm.auth.JwtUtil;
+import com.sekretowicz.gym_crm.auth.LoginAttempt;
 import com.sekretowicz.gym_crm.dto_legacy.ChangePasswordDto;
+import com.sekretowicz.gym_crm.dto_legacy.UserCredentials;
 import com.sekretowicz.gym_crm.model.User;
 import com.sekretowicz.gym_crm.repo.UserRepo;
 import com.sekretowicz.gym_crm.utils.UserUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service
 public class UserService {
     @Autowired
     private UserRepo repo;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private JwtUtil jwtUtil;
 
-    public void create(User user) {
+
+    //UPD 20.04: Now it would return UserCredentials
+    public UserCredentials create(User user) {
         log.info("Generating username and password for: {} {}", user.getFirstName(), user.getLastName());
-        user.setUsername(UserUtils.generateUsername(user.getFirstName(), user.getLastName()));
-        user.setPassword(UserUtils.generatePassword(8));
+        String username = UserUtils.generateUsername(user.getFirstName(), user.getLastName());
+        String password = UserUtils.generatePassword(8);
+        String token = jwtUtil.generateToken(username);
+        UserCredentials uc = new UserCredentials(username, password, token);
+
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(password));
 
         repo.save(user);
-        log.info("User created with username: {}", user.getUsername());
+        log.info("User created with username: {}", username);
+        return uc;
     }
 
     public User getByUsername(String username) {
@@ -56,18 +77,6 @@ public class UserService {
         repo.save(user);
     }
 
-    //REST task     17.03.2025
-
-    public boolean login(String username, String password) {
-        User user = getByUsername(username);
-        if (!user.getPassword().equals(password)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    //Создадим перегрузку changePassword
     @Transactional
     public boolean changePassword(ChangePasswordDto dto) throws ResponseStatusException {
         //Validation
@@ -82,10 +91,10 @@ public class UserService {
         }
 
         User user = getByUsername(dto.getUsername());
-        if (!user.getPassword().equals(dto.getOldPassword())) {
+        if (!passwordEncoder.matches(dto.getOldPassword(), user.getPassword())) {
             return false;
         }
-        user.setPassword(dto.getNewPassword());
+        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
         repo.save(user);
         return true;
     }

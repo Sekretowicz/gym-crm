@@ -103,7 +103,7 @@ public class TrainerService {
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setActive(true);
-        userService.create(user);
+        UserCredentials response = userService.create(user);
 
         //Creating a Trainer
         Trainer trainer = new Trainer();
@@ -111,9 +111,6 @@ public class TrainerService {
         trainer.setSpecialization(trainingTypeService.getById(dto.getSpecId()));
         create(trainer);
 
-        UserCredentials response = new UserCredentials();
-        response.setUsername(user.getUsername());
-        response.setPassword(user.getPassword());
         return response;
     }
 

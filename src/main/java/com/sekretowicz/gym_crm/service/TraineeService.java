@@ -138,7 +138,8 @@ public class TraineeService {
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setActive(true);
-        userService.create(user);
+
+        UserCredentials response =  userService.create(user);
         log.info("User created with username: {}", user.getUsername());
 
         //Creating a Trainee
@@ -150,9 +151,6 @@ public class TraineeService {
         create(trainee);
         log.info("Trainee created for user: {}", user.getUsername());
 
-        UserCredentials response = new UserCredentials();
-        response.setUsername(user.getUsername());
-        response.setPassword(user.getPassword());
         log.info("Trainee registration completed successfully for username: {}", response.getUsername());
         return response;
     }

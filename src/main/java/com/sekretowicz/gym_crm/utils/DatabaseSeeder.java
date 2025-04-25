@@ -44,6 +44,8 @@ public class DatabaseSeeder {
         trainer1Req.setLastName(faker.name().lastName());
         trainer1Req.setSpecId(fitness.getId());
         UserCredentials trainer1 = trainerService.register(trainer1Req);
+        //Print credentials
+        System.out.println("Trainer 1: " + trainer1.getUsername() + ", " + trainer1.getPassword());
 
         TrainerRegistrationRequest trainer2Req = new TrainerRegistrationRequest();
         trainer2Req.setFirstName(faker.name().firstName());
