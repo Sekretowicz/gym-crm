@@ -1,6 +1,8 @@
 package com.sekretowicz.gym_crm.service;
 
 import com.sekretowicz.gym_crm.dto.training.AddTrainingRequest;
+import com.sekretowicz.gym_crm.dto.workload.WorkloadRequestDto;
+import com.sekretowicz.gym_crm.feign.WorkloadClient;
 import com.sekretowicz.gym_crm.model.*;
 import com.sekretowicz.gym_crm.repo.*;
 import jakarta.persistence.EntityManager;
@@ -27,7 +29,12 @@ public class TrainingService {
     private TrainerService trainerService;
     @Autowired
     private EntityManager entityManager;
+    @Autowired
+    private WorkloadClient workloadClient;
 
+    /*
+    TODO: Is it ever used beyond tests? There's method with the same name in TrainingController, which is invoked by controller.
+     */
     @Transactional
     public Training addTraining(Training training) {
         log.info("Adding training: {}", training);
@@ -105,6 +112,9 @@ public class TrainingService {
         training.setTrainingName(dto.getTrainingName());
         training.setTrainingDate(dto.getTrainingDate());
         training.setTrainingDuration(dto.getTrainingDuration());
+
+        //Send workload via Feign client
+        workloadClient.notifyWorkload(new WorkloadRequestDto(training, "ADD"));
 
         repo.save(training);
     }

@@ -1,17 +1,16 @@
 package com.sekretowicz.gym_crm.controller;
 
-import com.sekretowicz.gym_crm.dto.training.TrainingResponse;
+import com.sekretowicz.gym_crm.feign.WorkloadClient;
 import com.sekretowicz.gym_crm.service.TraineeService;
 import com.sekretowicz.gym_crm.service.TrainerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.util.List;
 
-@Controller
+@RestController
 public class HomeController {
 
     @Autowired
@@ -20,6 +19,17 @@ public class HomeController {
     @Autowired
     private TrainerService trainerService;
 
+    //Just testing it works
+    @Autowired
+    private WorkloadClient client;
+
+    @GetMapping("/hello")
+    public void hello() {
+        client.sayHello();
+    }
+
+    //We don't use pages at all
+    /*
     @GetMapping("/")
     public String home(Model model, Principal principal) {
         if (principal != null) {
@@ -43,4 +53,6 @@ public class HomeController {
 
         return "home";
     }
+
+     */
 }

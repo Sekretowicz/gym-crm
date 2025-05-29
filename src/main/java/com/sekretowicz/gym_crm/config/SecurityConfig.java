@@ -34,12 +34,16 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
+                        /*
                         .requestMatchers(
                                 "/users/login",
                                 "/trainees/register",
-                                "/trainers/register"
+                                "/trainers/register",
+                                "/hello"
                         ).permitAll()
                         .anyRequest().authenticated()
+                         */
+                        .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

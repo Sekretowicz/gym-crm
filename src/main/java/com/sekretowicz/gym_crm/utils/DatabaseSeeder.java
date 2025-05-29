@@ -27,7 +27,7 @@ public class DatabaseSeeder {
 
     private final Faker faker = new Faker(new Locale("en"));
 
-    @PostConstruct
+    //@PostConstruct
     public void run() throws Exception {
         // 1. Training Types
         TrainingType fitness = new TrainingType();
