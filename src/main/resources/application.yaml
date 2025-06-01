@@ -5,17 +5,26 @@ spring:
   application:
     name: gym-crm
 
+  #datasource:
+    #url: jdbc:postgresql://pg-2b20c255-sekretowicz-pet-project.b.aivencloud.com:25554/defaultdb
+    #username: avnadmin
+    #password: AVNS_NrHLBRBR6BtYMW0w7gy
+    #driver-class-name: org.postgresql.Driver
   datasource:
-    url: jdbc:postgresql://pg-2b20c255-sekretowicz-pet-project.b.aivencloud.com:25554/defaultdb
-    username: avnadmin
-    password: AVNS_NrHLBRBR6BtYMW0w7gy
-    driver-class-name: org.postgresql.Driver
-
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+      console:
+        enabled: true
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        format_sql: true
 
   mvc:
     pathmatch:
@@ -65,3 +74,16 @@ logging:
     root: INFO
     feign: DEBUG
     feign.client: DEBUG
+
+resilience4j.circuitbreaker:
+  instances:
+    workloadService:
+      slidingWindowSize: 10
+      minimumNumberOfCalls: 5
+      failureRateThreshold: 50
+      waitDurationInOpenState: 10s
+      permittedNumberOfCallsInHalfOpenState: 3
+      automaticTransitionFromOpenToHalfOpenEnabled: true
+
+jwt:
+  secret: veryStrongSecretKeyForJwtGeneration1234567890

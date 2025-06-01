@@ -7,7 +7,9 @@ import com.sekretowicz.gym_crm.dto.trainee.TraineeUpdateRequest;
 import com.sekretowicz.gym_crm.dto.trainee.UpdateTraineeTrainersRequest;
 import com.sekretowicz.gym_crm.dto.trainer.TrainerShortDto;
 import com.sekretowicz.gym_crm.dto.training.TrainingResponse;
+import com.sekretowicz.gym_crm.dto.workload.WorkloadRequestDto;
 import com.sekretowicz.gym_crm.dto_legacy.UserCredentials;
+import com.sekretowicz.gym_crm.feign.WorkloadClient;
 import com.sekretowicz.gym_crm.model.*;
 import com.sekretowicz.gym_crm.repo.*;
 import jakarta.persistence.criteria.*;
@@ -36,6 +38,8 @@ public class TraineeService {
     private EntityManager entityManager;
     @Autowired
     private TrainerService trainerService;
+    @Autowired
+    private WorkloadClient workloadClient;
 
     public void create(Trainee trainee) {
         log.info("Creating trainee: {}", trainee);
@@ -73,7 +77,15 @@ public class TraineeService {
     public void deleteByUsername(String username) {
         log.info("Deleting trainee by username: {}", username);
         User user = userService.getByUsername(username);
-        repo.deleteByUser(user);
+        Trainee trainee = repo.findByUser(user);
+        /*
+        When we delete trainee, all his trainings will be deleted as well due to orphanRemoval and we should
+        notify workload service about this deletion.
+         */
+        for (Training training : trainee.getTrainings()) {
+            workloadClient.notifyWorkload(new WorkloadRequestDto(training, "DELETE"));
+        }
+        repo.delete(trainee);
     }
 
     public List<TrainingResponse> getTraineeTrainings(String traineeUsername, LocalDate fromDate, LocalDate toDate, String trainerName, String trainingType) {

@@ -6,6 +6,8 @@ import com.sekretowicz.gym_crm.dto.trainer.TrainerRegistrationRequest;
 import com.sekretowicz.gym_crm.dto.trainer.TrainerUpdateRequest;
 import com.sekretowicz.gym_crm.dto.training.TrainingResponse;
 import com.sekretowicz.gym_crm.dto_legacy.UserCredentials;
+import com.sekretowicz.gym_crm.model.Trainer;
+import com.sekretowicz.gym_crm.repo.TrainerRepo;
 import com.sekretowicz.gym_crm.service.TrainerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

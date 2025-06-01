@@ -2,9 +2,11 @@ package com.sekretowicz.gym_crm.service;
 
 import com.sekretowicz.gym_crm.dto.training.AddTrainingRequest;
 import com.sekretowicz.gym_crm.dto.workload.WorkloadRequestDto;
+import com.sekretowicz.gym_crm.dto_legacy.TrainingDto;
 import com.sekretowicz.gym_crm.feign.WorkloadClient;
 import com.sekretowicz.gym_crm.model.*;
 import com.sekretowicz.gym_crm.repo.*;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,7 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class TrainingService {
+    public class TrainingService {
     @Autowired
     private TrainingRepo repo;
     @Autowired
@@ -84,6 +86,7 @@ public class TrainingService {
 
     //14. Add Training (POST method)
     @Transactional
+    @CircuitBreaker(name = "workloadService", fallbackMethod = "fallbackSend")
     public void addTraining(AddTrainingRequest dto) throws ResponseStatusException {
         //Validation: everything required except trainingType
         if (dto.getTraineeUsername() == null || dto.getTraineeUsername().isEmpty()) {
@@ -114,8 +117,23 @@ public class TrainingService {
         training.setTrainingDuration(dto.getTrainingDuration());
 
         //Send workload via Feign client
+        System.out.println("Sending workload notification");
         workloadClient.notifyWorkload(new WorkloadRequestDto(training, "ADD"));
 
         repo.save(training);
+    }
+
+    public void deleteTraining(Long trainingId) {
+        Training training = repo.findById(trainingId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Training not found"));
+
+        //Send workload via Feign client
+        workloadClient.notifyWorkload(new WorkloadRequestDto(training, "DELETE"));
+
+        repo.delete(training);
+    }
+
+    public void fallbackSend(AddTrainingRequest dto, Throwable t) {
+        log.warn("Fallback triggered for notifyWorkload: {}", t.getMessage());
     }
 }

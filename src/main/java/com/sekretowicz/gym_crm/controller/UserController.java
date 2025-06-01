@@ -4,6 +4,8 @@ import com.sekretowicz.gym_crm.auth.JwtUtil;
 import com.sekretowicz.gym_crm.auth.LoginAttemptService;
 import com.sekretowicz.gym_crm.dto_legacy.ChangePasswordDto;
 import com.sekretowicz.gym_crm.dto_legacy.UserCredentials;
+import com.sekretowicz.gym_crm.model.User;
+import com.sekretowicz.gym_crm.repo.UserRepo;
 import com.sekretowicz.gym_crm.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -59,5 +63,4 @@ public class UserController {
             return ResponseEntity.status(403).build();
         }
     }
-
 }

@@ -10,6 +10,10 @@ import java.time.LocalDate;
 
 @Data
 public class TrainingResponse {
+    //Id is important too
+    @Schema(description = "Training ID")
+    private Long id;
+
     @Schema(description = "Training name")
     private String trainingName;
 
@@ -22,14 +26,20 @@ public class TrainingResponse {
     @Schema(description = "Duration in minutes")
     private int trainingDuration;
 
-    @Schema(description = "Partner name (trainer or trainee)")
-    private String partnerName;
+    //29.05.2025    Now we'll store both trainer and trainee names in the training response
+    @Schema(description = "Trainer name")
+    private String trainerName;
+
+    @Schema(description = "Trainee name")
+    private String traineeName;
 
     public TrainingResponse(Training training) {
+        this.id = training.getId();
         this.trainingName = training.getTrainingName();
         this.trainingDate = training.getTrainingDate();
         this.trainingType = training.getTrainingType();
         this.trainingDuration = training.getTrainingDuration();
-        this.partnerName = training.getTrainer().getUser().getUsername();
+        this.trainerName = training.getTrainer().getUser().getUsername();
+        this.traineeName = training.getTrainee().getUser().getUsername();
     }
 }

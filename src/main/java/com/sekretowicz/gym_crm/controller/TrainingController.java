@@ -1,14 +1,16 @@
 package com.sekretowicz.gym_crm.controller;
 
 import com.sekretowicz.gym_crm.dto.training.AddTrainingRequest;
+import com.sekretowicz.gym_crm.dto.training.TrainingResponse;
+import com.sekretowicz.gym_crm.model.Training;
+import com.sekretowicz.gym_crm.repo.TrainingRepo;
 import com.sekretowicz.gym_crm.service.TrainingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/trainings")
@@ -23,4 +25,5 @@ public class TrainingController {
     public void addTraining(@RequestBody AddTrainingRequest dto) {
         service.addTraining(dto);
     }
+
 }

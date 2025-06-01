@@ -1,6 +1,7 @@
 package com.sekretowicz.gym_crm.utils;
 
 import com.github.javafaker.Faker;
+import com.sekretowicz.gym_crm.auth.JwtUtil;
 import com.sekretowicz.gym_crm.dto.trainee.TraineeRegistrationRequest;
 import com.sekretowicz.gym_crm.dto.trainer.TrainerRegistrationRequest;
 import com.sekretowicz.gym_crm.dto.training.AddTrainingRequest;
@@ -12,23 +13,38 @@ import com.sekretowicz.gym_crm.service.TrainerService;
 import com.sekretowicz.gym_crm.service.TrainingService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.Locale;
 
 @Component
-public class DatabaseSeeder {
+public class DatabaseSeeder implements ApplicationListener<ApplicationReadyEvent> {
 
     @Autowired private TrainingTypeRepo trainingTypeRepo;
     @Autowired private TrainerService trainerService;
     @Autowired private TraineeService traineeService;
     @Autowired private TrainingService trainingService;
 
+    @Autowired private JwtUtil jwtUtil;
+
     private final Faker faker = new Faker(new Locale("en"));
 
     //@PostConstruct
-    public void run() throws Exception {
+    public void onApplicationEvent(ApplicationReadyEvent event){
+        System.out.println("\nJWT token for workload service:");
+        System.out.println(jwtUtil.generateToken("gym-crm") + "\n");
+
+        //Very-very ugly hack, we just have to wait until the other service is up
+        System.out.println("I'm ready!");
+        try {
+            Thread.sleep(60*1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         // 1. Training Types
         TrainingType fitness = new TrainingType();
         fitness.setTrainingTypeName("Fitness");
@@ -45,7 +61,10 @@ public class DatabaseSeeder {
         trainer1Req.setSpecId(fitness.getId());
         UserCredentials trainer1 = trainerService.register(trainer1Req);
         //Print credentials
-        System.out.println("Trainer 1: " + trainer1.getUsername() + ", " + trainer1.getPassword());
+        System.out.println("\nTrainer 1:");
+        System.out.println("Username: " + trainer1.getUsername());
+        System.out.println("Password: " + trainer1.getPassword());
+        System.out.println("Token: " + trainer1.getToken() + "\n");
 
         TrainerRegistrationRequest trainer2Req = new TrainerRegistrationRequest();
         trainer2Req.setFirstName(faker.name().firstName());
