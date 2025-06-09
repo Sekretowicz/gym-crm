@@ -8,8 +8,6 @@ import com.sekretowicz.gym_crm.dto.trainee.UpdateTraineeTrainersRequest;
 import com.sekretowicz.gym_crm.dto.trainer.TrainerShortDto;
 import com.sekretowicz.gym_crm.dto.training.TrainingResponse;
 import com.sekretowicz.gym_crm.dto_legacy.UserCredentials;
-import com.sekretowicz.gym_crm.model.Trainee;
-import com.sekretowicz.gym_crm.repo.TraineeRepo;
 import com.sekretowicz.gym_crm.service.TraineeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -37,15 +37,21 @@ spring:
     swagger-ui:
       path: /swagger-ui
 
-eureka:
-  client:
-    register-with-eureka: false
-    fetch-registry: true
-    service-url:
-      defaultZone: http://localhost:8080/eureka/
-  instance:
-    hostname: localhost
-    prefer-ip-address: true
+  activemq:
+    broker-url: tcp://localhost:61616
+    user: admin
+    password: admin
+    pub-sub-domain: false
+
+#eureka:
+#    client:
+#    register-with-eureka: false
+#    fetch-registry: true
+#    service-url:
+#      defaultZone: http://localhost:8080/eureka/
+#  instance:
+#    hostname: localhost
+#    prefer-ip-address: true
 
 feign:
   client:
@@ -72,18 +78,6 @@ management:
 logging:
   level:
     root: INFO
-    feign: DEBUG
-    feign.client: DEBUG
-
-resilience4j.circuitbreaker:
-  instances:
-    workloadService:
-      slidingWindowSize: 10
-      minimumNumberOfCalls: 5
-      failureRateThreshold: 50
-      waitDurationInOpenState: 10s
-      permittedNumberOfCallsInHalfOpenState: 3
-      automaticTransitionFromOpenToHalfOpenEnabled: true
 
 jwt:
   secret: veryStrongSecretKeyForJwtGeneration1234567890

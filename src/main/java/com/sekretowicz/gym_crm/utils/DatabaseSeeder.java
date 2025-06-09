@@ -40,7 +40,7 @@ public class DatabaseSeeder implements ApplicationListener<ApplicationReadyEvent
         //Very-very ugly hack, we just have to wait until the other service is up
         System.out.println("I'm ready!");
         try {
-            Thread.sleep(60*1000);
+            Thread.sleep(30*1000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

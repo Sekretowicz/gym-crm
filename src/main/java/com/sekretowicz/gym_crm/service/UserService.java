@@ -1,7 +1,6 @@
 package com.sekretowicz.gym_crm.service;
 
 import com.sekretowicz.gym_crm.auth.JwtUtil;
-import com.sekretowicz.gym_crm.auth.LoginAttempt;
 import com.sekretowicz.gym_crm.dto_legacy.ChangePasswordDto;
 import com.sekretowicz.gym_crm.dto_legacy.UserCredentials;
 import com.sekretowicz.gym_crm.model.User;
@@ -14,11 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service

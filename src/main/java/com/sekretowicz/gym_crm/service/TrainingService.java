@@ -1,12 +1,10 @@
 package com.sekretowicz.gym_crm.service;
 
 import com.sekretowicz.gym_crm.dto.training.AddTrainingRequest;
-import com.sekretowicz.gym_crm.dto.workload.WorkloadRequestDto;
-import com.sekretowicz.gym_crm.dto_legacy.TrainingDto;
-import com.sekretowicz.gym_crm.feign.WorkloadClient;
+import com.sekretowicz.gym_crm.messaging.dto.WorkloadMessageDto;
+import com.sekretowicz.gym_crm.messaging.producer.WorkloadPublisher;
 import com.sekretowicz.gym_crm.model.*;
 import com.sekretowicz.gym_crm.repo.*;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +30,8 @@ import java.util.List;
     @Autowired
     private EntityManager entityManager;
     @Autowired
-    private WorkloadClient workloadClient;
+    private WorkloadPublisher workloadPublisher;
 
-    /*
-    TODO: Is it ever used beyond tests? There's method with the same name in TrainingController, which is invoked by controller.
-     */
     @Transactional
     public Training addTraining(Training training) {
         log.info("Adding training: {}", training);
@@ -86,7 +81,6 @@ import java.util.List;
 
     //14. Add Training (POST method)
     @Transactional
-    @CircuitBreaker(name = "workloadService", fallbackMethod = "fallbackSend")
     public void addTraining(AddTrainingRequest dto) throws ResponseStatusException {
         //Validation: everything required except trainingType
         if (dto.getTraineeUsername() == null || dto.getTraineeUsername().isEmpty()) {
@@ -116,20 +110,15 @@ import java.util.List;
         training.setTrainingDate(dto.getTrainingDate());
         training.setTrainingDuration(dto.getTrainingDuration());
 
-        //Send workload via Feign client
-        System.out.println("Sending workload notification");
-        workloadClient.notifyWorkload(new WorkloadRequestDto(training, "ADD"));
-
         repo.save(training);
+
+        workloadPublisher.publish(new WorkloadMessageDto(training, "ADD"));
     }
 
     public void deleteTraining(Long trainingId) {
         Training training = repo.findById(trainingId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Training not found"));
-
-        //Send workload via Feign client
-        workloadClient.notifyWorkload(new WorkloadRequestDto(training, "DELETE"));
-
+        
         repo.delete(training);
     }
 
