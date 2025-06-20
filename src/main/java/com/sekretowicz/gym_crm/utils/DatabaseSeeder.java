@@ -1,7 +1,6 @@
 package com.sekretowicz.gym_crm.utils;
 
 import com.github.javafaker.Faker;
-import com.sekretowicz.gym_crm.auth.JwtUtil;
 import com.sekretowicz.gym_crm.dto.trainee.TraineeRegistrationRequest;
 import com.sekretowicz.gym_crm.dto.trainer.TrainerRegistrationRequest;
 import com.sekretowicz.gym_crm.dto.training.AddTrainingRequest;
@@ -11,7 +10,6 @@ import com.sekretowicz.gym_crm.repo.TrainingTypeRepo;
 import com.sekretowicz.gym_crm.service.TraineeService;
 import com.sekretowicz.gym_crm.service.TrainerService;
 import com.sekretowicz.gym_crm.service.TrainingService;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -23,22 +21,22 @@ import java.util.Locale;
 @Component
 public class DatabaseSeeder implements ApplicationListener<ApplicationReadyEvent> {
 
-    @Autowired private TrainingTypeRepo trainingTypeRepo;
-    @Autowired private TrainerService trainerService;
-    @Autowired private TraineeService traineeService;
-    @Autowired private TrainingService trainingService;
+    @Autowired
+    private TrainingTypeRepo trainingTypeRepo;
 
-    @Autowired private JwtUtil jwtUtil;
+    @Autowired
+    private TrainerService trainerService;
+
+    @Autowired
+    private TraineeService traineeService;
+
+    @Autowired
+    private TrainingService trainingService;
 
     private final Faker faker = new Faker(new Locale("en"));
 
-    //@PostConstruct
     public void onApplicationEvent(ApplicationReadyEvent event){
-        System.out.println("\nJWT token for workload service:");
-        System.out.println(jwtUtil.generateToken("gym-crm") + "\n");
-
-        //Very-very ugly hack, we just have to wait until the other service is up
-        System.out.println("I'm ready!");
+        System.out.println("I'm ready! Waiting for 30 seconds before seeding the database...");
         try {
             Thread.sleep(30*1000);
         } catch (InterruptedException e) {

@@ -1,9 +1,6 @@
 package com.sekretowicz.gym_crm.controller;
 
 import com.sekretowicz.gym_crm.dto.training.AddTrainingRequest;
-import com.sekretowicz.gym_crm.dto.training.TrainingResponse;
-import com.sekretowicz.gym_crm.model.Training;
-import com.sekretowicz.gym_crm.repo.TrainingRepo;
 import com.sekretowicz.gym_crm.service.TrainingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

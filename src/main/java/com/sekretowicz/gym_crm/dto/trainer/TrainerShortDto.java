@@ -1,6 +1,5 @@
 package com.sekretowicz.gym_crm.dto.trainer;
 
-
 import com.sekretowicz.gym_crm.model.Trainer;
 import com.sekretowicz.gym_crm.model.TrainingType;
 import io.swagger.v3.oas.annotations.media.Schema;

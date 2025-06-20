@@ -2,7 +2,6 @@ package com.sekretowicz.gym_crm.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.time.LocalDate;
 import java.util.List;
 
