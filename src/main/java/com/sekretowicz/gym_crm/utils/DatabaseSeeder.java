@@ -58,11 +58,6 @@ public class DatabaseSeeder implements ApplicationListener<ApplicationReadyEvent
         trainer1Req.setLastName(faker.name().lastName());
         trainer1Req.setSpecId(fitness.getId());
         UserCredentials trainer1 = trainerService.register(trainer1Req);
-        //Print credentials
-        System.out.println("\nTrainer 1:");
-        System.out.println("Username: " + trainer1.getUsername());
-        System.out.println("Password: " + trainer1.getPassword());
-        System.out.println("Token: " + trainer1.getToken() + "\n");
 
         TrainerRegistrationRequest trainer2Req = new TrainerRegistrationRequest();
         trainer2Req.setFirstName(faker.name().firstName());
@@ -101,5 +96,15 @@ public class DatabaseSeeder implements ApplicationListener<ApplicationReadyEvent
         training2.setTrainingDate(LocalDate.now().minusDays(1));
         training2.setTrainingDuration(45);
         trainingService.addTraining(training2);
+
+        //Print out the created entities
+        System.out.println("\nTrainer 1:");
+        System.out.println("Username: " + trainer1.getUsername());
+        System.out.println("Password: " + trainer1.getPassword());
+        System.out.println("Token: " + trainer1.getToken() + "\n");
+
+        System.out.println("\nTrainee 1:");
+        System.out.println("Username: " + trainee1.getUsername());
+        System.out.println("Password: " + trainee1.getPassword());
     }
 }
