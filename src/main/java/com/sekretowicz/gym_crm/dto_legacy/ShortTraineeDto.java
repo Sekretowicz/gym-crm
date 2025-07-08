@@ -3,6 +3,7 @@ package com.sekretowicz.gym_crm.dto_legacy;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sekretowicz.gym_crm.model.Trainee;
 import com.sekretowicz.gym_crm.model.User;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ShortTraineeDto {
     private String username;

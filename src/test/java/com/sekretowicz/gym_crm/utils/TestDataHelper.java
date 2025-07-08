@@ -3,6 +3,8 @@ package com.sekretowicz.gym_crm.utils;
 import com.github.javafaker.Faker;
 import com.sekretowicz.gym_crm.dto.trainee.TraineeRegistrationRequest;
 import com.sekretowicz.gym_crm.dto.trainer.TrainerRegistrationRequest;
+import com.sekretowicz.gym_crm.dto_legacy.ShortTraineeDto;
+import com.sekretowicz.gym_crm.dto_legacy.ShortTrainerDto;
 import com.sekretowicz.gym_crm.dto_legacy.UserCredentials;
 import com.sekretowicz.gym_crm.model.Trainee;
 import com.sekretowicz.gym_crm.model.Trainer;
@@ -17,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Component
 public class TestDataHelper {
@@ -28,48 +29,54 @@ public class TestDataHelper {
     @Autowired private TrainingService trainingService;
     @Autowired private TrainingTypeRepo trainingTypeRepo;
 
+    public static final String DEFAULT_TRAINING_TYPE = "Fitness";
+
     private final Faker faker = new Faker();
 
     public void seedTrainingTypesIfNeeded() {
         if (trainingTypeRepo.count() == 0) {
-            trainingTypeRepo.saveAll(List.of(
-                    new TrainingType("Fitness"),
-                    new TrainingType("Yoga"),
-                    new TrainingType("Cardio")
-            ));
+            trainingTypeRepo.save(new TrainingType(DEFAULT_TRAINING_TYPE));
         }
     }
 
-    public UserCredentials createRandomTrainee() {
-        TraineeRegistrationRequest request = new TraineeRegistrationRequest();
-        request.setFirstName(faker.name().firstName());
-        request.setLastName(faker.name().lastName());
-        request.setAddress(faker.address().fullAddress());
-        request.setDateOfBirth(LocalDate.of(
+    //Reusing ShortTraineeDto to store trainee data
+    public ShortTraineeDto createRandomTrainee() {
+        String firstName = faker.name().firstName();
+        String lastName = faker.name().lastName();
+        String address = faker.address().fullAddress();
+        LocalDate dateOfBirth = LocalDate.of(
                 faker.number().numberBetween(1980, 2000),
                 faker.number().numberBetween(1, 12),
-                faker.number().numberBetween(1, 28))
+                faker.number().numberBetween(1, 28)
         );
-        return traineeService.register(request);
+
+        TraineeRegistrationRequest request = new TraineeRegistrationRequest();
+        request.setFirstName(firstName);
+        request.setLastName(lastName);
+        request.setAddress(address);
+        request.setDateOfBirth(dateOfBirth);
+        UserCredentials creds = traineeService.register(request);
+
+        return new ShortTraineeDto(
+                creds.getUsername(),
+                firstName,
+                lastName,
+                dateOfBirth,
+                address,
+                true
+        );
     }
 
-    public Trainee createTraineeEntity() {
-        UserCredentials creds = createRandomTrainee();
-        return traineeService.getByUsername(creds.getUsername());
-    }
+    //Reusing ShortTrainerDto to store trainer data
+    public ShortTrainerDto createRandomTrainer() {
+        TrainingType trainingType = trainingTypeRepo.findByTrainingTypeName(DEFAULT_TRAINING_TYPE);
+        String firstName = faker.name().firstName();
+        String lastName = faker.name().lastName();
 
-    public UserCredentials createRandomTrainer() {
-        TrainingType trainingType = trainingTypeRepo.findByTrainingTypeName("Fitness");
-        TrainerRegistrationRequest request = new TrainerRegistrationRequest();
-        request.setFirstName(faker.name().firstName());
-        request.setLastName(faker.name().lastName());
-        request.setSpecId(trainingType.getId());
-        return trainerService.register(request);
-    }
+        TrainerRegistrationRequest request = new TrainerRegistrationRequest(firstName, lastName, trainingType.getId());
+        UserCredentials creds = trainerService.register(request);
 
-    public Trainer createTrainerEntity() {
-        UserCredentials creds = createRandomTrainer();
-        return trainerService.getByUsername(creds.getUsername());
+        return new ShortTrainerDto(creds.getUsername(), firstName, lastName, trainingType, true);
     }
 
     public void assignTrainerToTrainee(String traineeUsername, String trainerUsername) {
@@ -103,41 +110,10 @@ public class TestDataHelper {
         Training training = new Training();
         training.setTrainingName("Auto session");
         training.setTrainingDate(LocalDate.now());
-        training.setTrainingDuration(45);
+        training.setTrainingDuration(60);
         training.setTrainee(trainee);
         training.setTrainer(trainer);
         training.setTrainingType(trainingTypeRepo.findByTrainingTypeName(typeName));
         trainingService.addTraining(training);
-    }
-
-    public TraineeRegistrationRequest createInvalidTraineeRequest_MissingFirstName() {
-        TraineeRegistrationRequest request = new TraineeRegistrationRequest();
-        request.setLastName(faker.name().lastName());
-        request.setAddress(faker.address().fullAddress());
-        request.setDateOfBirth(LocalDate.of(1990, 5, 20));
-        return request;
-    }
-
-    public TraineeRegistrationRequest createInvalidTraineeRequest_MissingLastName() {
-        TraineeRegistrationRequest request = new TraineeRegistrationRequest();
-        request.setFirstName(faker.name().firstName());
-        request.setAddress(faker.address().fullAddress());
-        request.setDateOfBirth(LocalDate.of(1990, 5, 20));
-        return request;
-    }
-
-    public TrainerRegistrationRequest createInvalidTrainerRequest_MissingFirstName() {
-        TrainingType trainingType = trainingTypeRepo.findByTrainingTypeName("Fitness");
-        TrainerRegistrationRequest request = new TrainerRegistrationRequest();
-        request.setLastName(faker.name().lastName());
-        request.setSpecId(trainingType.getId());
-        return request;
-    }
-
-    public TrainerRegistrationRequest createInvalidTrainerRequest_MissingSpecialization() {
-        TrainerRegistrationRequest request = new TrainerRegistrationRequest();
-        request.setFirstName(faker.name().firstName());
-        request.setLastName(faker.name().lastName());
-        return request;
     }
 }

@@ -23,4 +23,21 @@ public class Trainer {
 
     @ManyToMany(mappedBy = "trainers")
     private Set<Trainee> trainees;
+
+    //04.07 Override equals for comparing
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Trainer)) return false;
+        Trainer trainer = (Trainer) o;
+
+        //Let's assume that ID and username are enough
+        if (id != trainer.getId()) {
+            return false;
+        }
+        if (!user.getUsername().equals(trainer.getUser().getUsername())) {
+            return false;
+        }
+        return true;
+    }
 }

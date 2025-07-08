@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sekretowicz.gym_crm.model.Trainer;
 import com.sekretowicz.gym_crm.model.TrainingType;
 import com.sekretowicz.gym_crm.model.User;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ShortTrainerDto {
     private String username;

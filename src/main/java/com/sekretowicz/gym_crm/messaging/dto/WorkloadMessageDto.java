@@ -1,6 +1,7 @@
 package com.sekretowicz.gym_crm.messaging.dto;
 
 import com.sekretowicz.gym_crm.model.Training;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -8,13 +9,14 @@ import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class WorkloadMessageDto {
     private String trainerUsername;
     private String firstName;
     private String lastName;
-    private boolean isActive;
+    private Boolean isActive;
     private LocalDate trainingDate;
-    private int trainingDuration;
+    private Integer trainingDuration;
     private String actionType;
 
     public WorkloadMessageDto(Training training, String actionType) {
@@ -25,5 +27,22 @@ public class WorkloadMessageDto {
         this.trainingDate = training.getTrainingDate();
         this.trainingDuration = training.getTrainingDuration();
         this.actionType = actionType;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof WorkloadMessageDto)) return false;
+
+        WorkloadMessageDto that = (WorkloadMessageDto) o;
+
+        if (!trainerUsername.equals(that.trainerUsername)) return false;
+        if (!firstName.equals(that.firstName)) return false;
+        if (!lastName.equals(that.lastName)) return false;
+        if (!isActive.equals(that.isActive)) return false;
+        if (!trainingDate.equals(that.trainingDate)) return false;
+        if (!trainingDuration.equals(that.trainingDuration)) return false;
+        if (!actionType.equals(that.actionType)) return false;
+        return true;
     }
 }

@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.util.Locale;
 
-@Component
+//@Component
 public class DatabaseSeeder implements ApplicationListener<ApplicationReadyEvent> {
 
     @Autowired

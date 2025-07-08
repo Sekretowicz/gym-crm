@@ -30,5 +30,5 @@ public class AddTrainingRequest {
     private LocalDate trainingDate;
 
     @Schema(description = "Duration in minutes", required = true)
-    private int trainingDuration;
+    private Integer trainingDuration;
 }

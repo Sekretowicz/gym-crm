@@ -33,4 +33,21 @@ public class Trainee {
             inverseJoinColumns = @JoinColumn(name = "trainer_id")
     )
     private List<Trainer> trainers;
+
+    //04.07 Override equals for comparing
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Trainee)) return false;
+        Trainee trainee = (Trainee) o;
+
+        //Let's assume that ID and username are enough
+        if (id != trainee.getId()) {
+            return false;
+        }
+        if (!user.getUsername().equals(trainee.getUser().getUsername())) {
+            return false;
+        }
+        return true;
+    }
 }

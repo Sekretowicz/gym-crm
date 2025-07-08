@@ -1,6 +1,7 @@
 package com.sekretowicz.gym_crm.service;
 
 import com.sekretowicz.gym_crm.dto.training.AddTrainingRequest;
+import com.sekretowicz.gym_crm.dto.training.TrainingResponse;
 import com.sekretowicz.gym_crm.messaging.dto.WorkloadMessageDto;
 import com.sekretowicz.gym_crm.messaging.producer.WorkloadPublisher;
 import com.sekretowicz.gym_crm.model.*;
@@ -81,7 +82,7 @@ import java.util.List;
 
     //14. Add Training (POST method)
     @Transactional
-    public void addTraining(AddTrainingRequest dto) throws ResponseStatusException {
+    public TrainingResponse addTraining(AddTrainingRequest dto) throws ResponseStatusException {
         //Validation: everything required except trainingType
         if (dto.getTraineeUsername() == null || dto.getTraineeUsername().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Trainee name is required");
@@ -113,6 +114,9 @@ import java.util.List;
         repo.save(training);
 
         workloadPublisher.publish(new WorkloadMessageDto(training, "ADD"));
+
+        //UPD: Now we return TrainingResponse instead of void, because it's needed for tests
+        return new TrainingResponse(training);
     }
 
     public void deleteTraining(Long trainingId) {
