@@ -3,13 +3,12 @@ package com.sekretowicz.gym_crm.utils;
 import com.sekretowicz.gym_crm.auth.JwtUtil;
 import com.sekretowicz.gym_crm.dto.training.AddTrainingRequest;
 import com.sekretowicz.gym_crm.dto.training.TrainingResponse;
+import com.sekretowicz.gym_crm.dto.training.VerboseTrainingResponse;
 import com.sekretowicz.gym_crm.dto_legacy.ShortTraineeDto;
 import com.sekretowicz.gym_crm.dto_legacy.ShortTrainerDto;
-import com.sekretowicz.gym_crm.model.Training;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +25,7 @@ public class ScenarioContext {
     private Long trainingTypeId = null;
     @Getter
     @Setter
-    private AddTrainingRequest currentTraining = null;
+    private VerboseTrainingResponse currentTraining = null;
     @Getter
     @Setter
     private HttpStatus lastResponseStatus = null;

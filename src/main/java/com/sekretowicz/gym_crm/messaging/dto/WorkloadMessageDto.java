@@ -1,5 +1,6 @@
 package com.sekretowicz.gym_crm.messaging.dto;
 
+import com.sekretowicz.gym_crm.dto.training.VerboseTrainingResponse;
 import com.sekretowicz.gym_crm.model.Training;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,6 +28,16 @@ public class WorkloadMessageDto {
         this.trainingDate = training.getTrainingDate();
         this.trainingDuration = training.getTrainingDuration();
         this.actionType = actionType;
+    }
+
+    public WorkloadMessageDto(VerboseTrainingResponse trainingResponse) {
+        this.trainerUsername = trainingResponse.getTrainer().getUsername();
+        this.firstName = trainingResponse.getTrainer().getFirstName();
+        this.lastName = trainingResponse.getTrainer().getLastName();
+        this.isActive = trainingResponse.getTrainer().getIsActive();
+        this.trainingDate = trainingResponse.getTrainingDate();
+        this.trainingDuration = trainingResponse.getTrainingDuration();
+        this.actionType = trainingResponse.getActionType();
     }
 
     @Override

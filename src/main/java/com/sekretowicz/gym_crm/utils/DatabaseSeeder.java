@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.util.Locale;
 
-//@Component
+@Component
 public class DatabaseSeeder implements ApplicationListener<ApplicationReadyEvent> {
 
     @Autowired
@@ -38,7 +38,7 @@ public class DatabaseSeeder implements ApplicationListener<ApplicationReadyEvent
     public void onApplicationEvent(ApplicationReadyEvent event){
         System.out.println("I'm ready! Waiting for 30 seconds before seeding the database...");
         try {
-            Thread.sleep(30*1000);
+            Thread.sleep(0*1000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

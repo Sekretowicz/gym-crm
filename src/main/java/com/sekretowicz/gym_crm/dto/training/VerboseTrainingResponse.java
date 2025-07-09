@@ -13,16 +13,20 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 public class VerboseTrainingResponse {
-    private ShortTraineeDto traineeDetails;
-    private ShortTrainerDto trainerDetails;
+    //This class stores all possible information about training. We return it after adding a new training.
+
+    private Long id;
+    private ShortTraineeDto trainee;
+    private ShortTrainerDto trainer;
     private Boolean isActive;
     private LocalDate trainingDate;
     private Integer trainingDuration;
     private String actionType;
 
     public VerboseTrainingResponse(Training training) {
-        this.traineeDetails = new ShortTraineeDto(training.getTrainee());
-        this.trainerDetails = new ShortTrainerDto(training.getTrainer());
+        this.id = training.getId();
+        this.trainee = new ShortTraineeDto(training.getTrainee());
+        this.trainer = new ShortTrainerDto(training.getTrainer());
         this.isActive = training.getTrainer().getUser().isActive();
         this.trainingDate = training.getTrainingDate();
         this.trainingDuration = training.getTrainingDuration();
