@@ -36,6 +36,7 @@ public class DatabaseSeeder implements ApplicationListener<ApplicationReadyEvent
     private final Faker faker = new Faker(new Locale("en"));
 
     public void onApplicationEvent(ApplicationReadyEvent event){
+        /*
         System.out.println("I'm ready! Waiting for 30 seconds before seeding the database...");
         try {
             Thread.sleep(0*1000);
@@ -106,5 +107,7 @@ public class DatabaseSeeder implements ApplicationListener<ApplicationReadyEvent
         System.out.println("\nTrainee 1:");
         System.out.println("Username: " + trainee1.getUsername());
         System.out.println("Password: " + trainee1.getPassword());
+
+         */
     }
 }

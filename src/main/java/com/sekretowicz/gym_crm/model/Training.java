@@ -8,6 +8,7 @@ import java.time.LocalDate;
 @Entity
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class Training {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -116,4 +116,15 @@ public class TestDataHelper {
         training.setTrainingType(trainingTypeRepo.findByTrainingTypeName(typeName));
         trainingService.addTraining(training);
     }
+
+    public Trainee createTraineeEntity() {
+        ShortTraineeDto traineeDto = createRandomTrainee();
+        return traineeService.getByUsername(traineeDto.getUsername());
+    }
+
+    public Trainer createTrainerEntity() {
+        ShortTrainerDto trainerDto = createRandomTrainer();
+        return trainerService.getByUsername(trainerDto.getUsername());
+    }
+
 }

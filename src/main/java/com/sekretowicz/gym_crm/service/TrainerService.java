@@ -45,7 +45,8 @@ public class TrainerService {
     }
 
     public void update(Trainer trainer) {
-        log.info("Updating trainer: {}", trainer);
+        //Commented out because it's buggy (circular reference)
+        //log.info("Updating trainer: {}", trainer);
         if (repo.existsById(trainer.getId())) {
             repo.save(trainer);
         } else {

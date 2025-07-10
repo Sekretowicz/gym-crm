@@ -128,8 +128,4 @@ import java.util.List;
 
         workloadPublisher.publish(new WorkloadMessageDto(training, "DELETE"));
     }
-
-    public void fallbackSend(AddTrainingRequest dto, Throwable t) {
-        log.warn("Fallback triggered for notifyWorkload: {}", t.getMessage());
-    }
 }

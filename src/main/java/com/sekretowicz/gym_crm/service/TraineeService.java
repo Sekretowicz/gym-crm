@@ -49,7 +49,8 @@ public class TraineeService {
     }
 
     public void update(Trainee trainee) {
-        log.info("Updating trainee: {}", trainee);
+        //Commented out because it's buggy (circular reference)
+        //log.info("Updating trainee: {}", trainee);
         if (repo.existsById(trainee.getId())) {
             repo.save(trainee);
         } else {

@@ -3,6 +3,7 @@ package com.sekretowicz.gym_crm.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -32,7 +33,7 @@ public class Trainee {
             joinColumns = @JoinColumn(name = "trainee_id"),
             inverseJoinColumns = @JoinColumn(name = "trainer_id")
     )
-    private List<Trainer> trainers;
+    private List<Trainer> trainers = new ArrayList<>();
 
     //04.07 Override equals for comparing
     @Override

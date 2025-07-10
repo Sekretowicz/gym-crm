@@ -1,15 +1,15 @@
 package com.sekretowicz.gym_crm.utils;
 
 import com.sekretowicz.gym_crm.auth.JwtUtil;
-import com.sekretowicz.gym_crm.dto.training.AddTrainingRequest;
-import com.sekretowicz.gym_crm.dto.training.TrainingResponse;
 import com.sekretowicz.gym_crm.dto.training.VerboseTrainingResponse;
 import com.sekretowicz.gym_crm.dto_legacy.ShortTraineeDto;
 import com.sekretowicz.gym_crm.dto_legacy.ShortTrainerDto;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -32,6 +32,9 @@ public class ScenarioContext {
     @Getter
     @Setter
     private String jwtToken = null;
+    @Getter
+    @Setter
+    private HttpHeaders headers = null;
 
     public void prepareTestData() {
         //By now we need just to create some training types, the rest of the data will be created on demand
@@ -66,5 +69,14 @@ public class ScenarioContext {
             jwtToken = jwtUtil.generateToken(this.getCurrentTrainer().getUsername());
         }
         return jwtToken;
+    }
+
+    public HttpHeaders getHeadersForCurrentUser() {
+        if (headers == null) {
+            headers = new HttpHeaders();
+            headers.setBearerAuth(getJwtTokenForCurrentUser());
+            headers.setContentType(MediaType.APPLICATION_JSON);
+        }
+        return headers;
     }
 }

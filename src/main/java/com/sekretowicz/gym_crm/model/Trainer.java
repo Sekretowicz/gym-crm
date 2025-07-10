@@ -3,6 +3,7 @@ package com.sekretowicz.gym_crm.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -22,7 +23,7 @@ public class Trainer {
     private TrainingType specialization;
 
     @ManyToMany(mappedBy = "trainers")
-    private Set<Trainee> trainees;
+    private Set<Trainee> trainees = new HashSet<>();
 
     //04.07 Override equals for comparing
     @Override
