@@ -11,8 +11,8 @@ spring:
     username: sa
     password:
   h2:
-      console:
-        enabled: true
+    console:
+      enabled: true
   jpa:
     hibernate:
       ddl-auto: update
@@ -33,9 +33,9 @@ spring:
       path: /swagger-ui
 
   activemq:
-    broker-url: tcp://172.17.0.2:61616
-    user: admin
-    password: admin
+    broker-url: vm://dummy-broker
+    user: dummy
+    password: dummy
     pub-sub-domain: false
 
 management:
@@ -57,4 +57,11 @@ logging:
     root: INFO
 
 jwt:
-  secret: veryStrongSecretKeyForJwtGeneration1234567890
+  secret: dummy
+
+gym-crm:
+  integrations:
+    workload-publisher-enabled: false
+eureka:
+  client:
+    enabled: false
