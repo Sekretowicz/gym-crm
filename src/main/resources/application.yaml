@@ -6,13 +6,10 @@ spring:
     name: gym-crm
 
   datasource:
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-  h2:
-      console:
-        enabled: true
+    url: jdbc:postgresql://gym-crm-db.cx488iukomaa.eu-north-1.rds.amazonaws.com:5432/postgres?sslmode=require
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: IloveSQL123
   jpa:
     hibernate:
       ddl-auto: update
@@ -20,6 +17,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc.time_zone: UTC
 
   mvc:
     pathmatch:
@@ -55,6 +54,21 @@ management:
 logging:
   level:
     root: INFO
+
+jms:
+  listener:
+    auto-startup: false
+
+autoconfigure:
+  exclude:
+    - org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration
+    - org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration
+    - org.springframework.boot.autoconfigure.jms.JndiJmsAutoConfiguration
+
+aws:
+  region: eu-north-1
+  sqs:
+    queue-name: gym-crm-queue
 
 jwt:
   secret: veryStrongSecretKeyForJwtGeneration1234567890
