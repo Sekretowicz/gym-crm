@@ -15,7 +15,7 @@ public class WorkloadMessageDto {
     private String trainerUsername;
     private String firstName;
     private String lastName;
-    private Boolean isActive;
+    private Boolean active;
     private LocalDate trainingDate;
     private Integer trainingDuration;
     private String actionType;
@@ -24,7 +24,7 @@ public class WorkloadMessageDto {
         this.trainerUsername = training.getTrainer().getUser().getUsername();
         this.firstName = training.getTrainer().getUser().getFirstName();
         this.lastName = training.getTrainer().getUser().getLastName();
-        this.isActive = training.getTrainer().getUser().isActive();
+        this.active = training.getTrainer().getUser().isActive();
         this.trainingDate = training.getTrainingDate();
         this.trainingDuration = training.getTrainingDuration();
         this.actionType = actionType;
@@ -34,7 +34,7 @@ public class WorkloadMessageDto {
         this.trainerUsername = trainingResponse.getTrainer().getUsername();
         this.firstName = trainingResponse.getTrainer().getFirstName();
         this.lastName = trainingResponse.getTrainer().getLastName();
-        this.isActive = trainingResponse.getTrainer().getIsActive();
+        this.active = trainingResponse.getTrainer().getIsActive();
         this.trainingDate = trainingResponse.getTrainingDate();
         this.trainingDuration = trainingResponse.getTrainingDuration();
         this.actionType = trainingResponse.getActionType();
@@ -50,7 +50,7 @@ public class WorkloadMessageDto {
         if (!trainerUsername.equals(that.trainerUsername)) return false;
         if (!firstName.equals(that.firstName)) return false;
         if (!lastName.equals(that.lastName)) return false;
-        if (!isActive.equals(that.isActive)) return false;
+        if (!active.equals(that.active)) return false;
         if (!trainingDate.equals(that.trainingDate)) return false;
         if (!trainingDuration.equals(that.trainingDuration)) return false;
         if (!actionType.equals(that.actionType)) return false;
